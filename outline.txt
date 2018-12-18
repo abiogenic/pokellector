@@ -1,0 +1,51 @@
+### Outline of Pokéllector
+
+Like DINOTYCOON and ZOO TYCOON but with Pokémon
+
+
+
+### Goal of the game: ###
+
+To have a managerie of Pokémon with individual unique personalities and optimal cage conditions
+
+Happiness scores can be computed per Pokémon and for the managerie 
+
+
+### Class objects in the game: ###
+
+PLAYER has a MANAGERIE which has CAGES which can hold POKEMON which have unique PERSONALITIES
+
+PERSONALITIES are a series of RESPONSES to STIMULI
+
+PLAYER does not have direct access to the POKEMON's PERSONALITY but can learn their indiviudal RESPONSES to STIMULI through gameplay
+
+STIMULI can be ITEMS, HABITAT, SPACE, ROOMMATES, SHELTER, and INTERACTION
+
+STIMULI can have different PROPERTIES that the POKEMON may or may not respond to, but such response will be consistant for that POKEMON
+
+	
+	### EXAMPLE: ###
+
+	SQUIRTLE-A134 (a POKEMON) may like the blue ball in the cage because it is blue, while SQUIRTLE-A137 may like the blue ball because it bounces
+
+	SQUIRTLE-A134 may not like a red ball, but SQUIRTLE-A137 may like it just as much
+
+	Such RESPONSES to a STIMULUS like a ball are player-discoverable downstream results of the a RESPONSE to the STIMULUS's PROPERTIES
+
+	These PROPERTIES can be booleans or scalers, and the PERSONALITY's optimal PROPERTY does not need to be at an extreme of the scaler
+
+	For instance, SQUIRTLE-A137 may like the blue ball with a bounciness of .6 just as much as the red ball with a bounciness of .8, but its optimal bounciness is .7
+
+
+### Gameplay: ###
+
+PLAYER has starting FUNDS that vary on the DIFFICULTY level
+
+PLAYER can go to the MARKET to browse POKEMON and ITEMS for sale
+
+PLAYER can buy new LAND or CAGES or LANDSCAPE(CAGES) for different HABITATS
+
+PLAYER can RECAGE(POKEMON) and BUILD(SHELTER) 
+
+
+
