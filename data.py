@@ -1,38 +1,33 @@
 #!/usr/bin/env python3
+# coding: utf-8
 
-from __future__ import absolute_import
-from __future__ import print_function
-import random
+### Import modules
+import random as rand
+import uuid
+import time
+import sys
 import os
 import glob
+import pandas as pd
 
-#random.seed(123)
+# random.seed(123)
 
-### Load functions
+def get(string):
+	wd = os.path.abspath(__file__)
+	wd = wd.rsplit("/", 1)[0]
 
-def readCSV(csvFile):
-	data = []
-	for line in csvFile:
-		# split each line into a list of items.
-		line = line.rstrip()
-		items = line.split(',')
-		# append this list of items to a variables called "data"
-		data.append(items)
-	return(data)
+	os.chdir(wd+"/csv/")
 
-wd = os.path.abspath(__file__)
-wd = wd.rsplit("/", 1)[0]
-wd_csv = wd+"/csv/"
+	base = os.path.basename(string+".csv")
+	file = os.path.splitext(string)
+	preindexed_results = pd.read_csv(open(base), index_col=0)
+	os.chdir(wd)
 
-os.chdir(wd_csv)
+	return(preindexed_results)
 
-data = {}
-
-for csv in glob.glob(os.path.join("*.csv")):
-	base = os.path.basename(csv)
-	file = os.path.splitext(base)[0]
-	csv = readCSV(open(base))
-	data[str(file)] = csv
-
-os.chdir(wd)
-
+def query():
+	pokemon_species = get('pokemon_species')
+	del pokemon_species ['conquest_order']
+	pokemon = get('pokemon')
+	species = pokemon.join(pokemon_species, on='species_id', how='left', lsuffix='', rsuffix='_species')
+	return(species)

@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
+# coding: utf-8
 
-from __future__ import absolute_import
-from __future__ import print_function
+# from __future__ import absolute_import
+# from __future__ import print_function
 import random
 import uuid
 import data
-import classes as cl
+#import classes as cl
+#import pokemon as pk
 import time
 import sys
 import os
 
 #random.seed(123)
 
-def write(string):
+def type(string):
+	for l in string:
+		sys.stdout.write(l)
+		sys.stdout.flush()
+		time.sleep(0.01)
+
+def ask(string):
 	for l in string:
 		sys.stdout.write(l)
 		sys.stdout.flush()
@@ -20,76 +28,85 @@ def write(string):
 	rawInput = input()
 	return(rawInput)
 
-def addToParty(trainer, pokemon):
-	"""
-	After capturing or obtaining a Pokemon, check if party is full
-	If party is full, append Pokemon to PC
-	If else, append Pokemon to party
-	Assign pokemon.ownerUUID to trainer.UUID
-	"""
+#### Preprocessing for classes
 
-	party_is_full, empty_slot = trainer.party.find_empty_slot()
+def findEncounterIDs():
+	encounter_id_list = []
+	for line in data.data['encounters']:
+		encounter_id_list.append(line[0])
+	encounter_id_list.remove('id')
+	return(encounter_id_list)
 
-	if party_is_full == True:
-		trainer.pc.append(pokemon)
-		print("Full party. " + str(trainer.name) + " added " + str(pokemon.identifier) + " to the PC.")
+def findLocationIDs():
+	location_id_list = []
+	for line in data.data['locations']:
+		location_id_list.append(line[0])
+	location_id_list.remove('id')
+	return(location_id_list)
 
+def generateGender(id):
+	gender_rate = data.data['pokemon_species'][int(id)][8]
+	if int(gender_rate) < 0:
+		gender = '3'
 	else:
-		empty_slot = pokemon
-		print(str(trainer.name) + " added " + str(pokemon.identifier) + " to the party.")
-		
-	pokemon.ownerUUID = trainer.UUID
+		gender = random.uniform(0,1)
+		if gender > int(gender_rate)/8:
+			gender = '2'
+		else:
+			gender = '1'
+	return(gender)
+
+###############
+#ENCOUNTER RANDOM POKEMON
+###############
+
+def encounterPokemon(pokemon_dictionary,var_rarity,var_max_level,var_shape):
+
+	# find all encounter ids
+	encounter_id_list = findEncounterIDs()
+
+	def criteria1():
+		return(rarity < var_rarity)
+	def criteria2():
+		return(max_level < var_max_level)
+	def criteria3():
+		return(shape == var_shape)
+	#def criteria4():
+	#	return(color == var_color)
+
+	# while pokemon not found to meet criteria
+	found = False
+	while found == False:
+		encounter = cl.Encounter(random.choice(encounter_id_list)) # randomly generate from encounter list
+		location = cl.Location(encounter.location_area_id) # pull encounter's location information
+		if location.region_id is not "":
+			rarity = int(encounter.rarity)
+			max_level = int(encounter.max_level)
+			shape = pk.Species(encounter.pokemon_id).shape
+			color = pk.Species(encounter.pokemon_id).color
+			if criteria3(): # if encounter meets criteria
+				if criteria2(): # if encounter meets criteria
+					if criteria3(): # if encounter meets criteria
+						#if criteria4(): # if encounter meets criteria
+						key = uuid.uuid1() # encounter pokemon
+						encountered_pokemon = pk.Pokemon(key, encounter.pokemon_id, random.randint(int(encounter.min_level), int(encounter.max_level)), encounter.location_area_id)
+						pokemon_dictionary[key] = encountered_pokemon
+						found = True
+
+	#os.system('clear')
+	print(str(pokemon_dictionary[key]))
+	print(pk.Species(pokemon_dictionary[key].id).color)
+	
+	print(str(pokemon_dictionary[key].gender).capitalize())
+	if pokemon_dictionary[key].location.region_name == "":
+		print("From " + pokemon_dictionary[key].location.name + ".") 
+	else:
+		print("From " + pokemon_dictionary[key].location.name + " in the " + pokemon_dictionary[key].location.region_name + " region.")
+	print("")
+
+	return(pokemon_dictionary,key)
+
+#### Gameplay: Classes interact
 
 def addToBag(trainer, item, quantity):
-	"""
-	After obtaining an item, check item category
-	Check quantity in bag
-	Sum quantity in bag and quantity to add
-	Append to bag
-	"""
-		
-	pokemon.ownerUUID = trainer.UUID
-
-def attemptCatch(pokemon, attempts):
-	rawInput = write("Would you like to try to catch this Pokémon? >> ")
-	while attempts > 0:
-
-		if 'n' in rawInput:
-			time.sleep(1)
-			os.system('clear')
-			return(0, attempts)
-
-		elif 'y' in rawInput:
-			capture_rate = cl.Species(pokemon.id).capture_rate
-			roll = random.randint(0,255)
-
-			if roll < int(capture_rate):
-				time.sleep(0.05)
-				print("Caught!")
-				time.sleep(1)
-				#os.system('clear')
-				attempts = attempts - 1
-				return(1, attempts)
-			else:
-				time.sleep(0.05)
-				print("Missed")
-				time.sleep(1)
-				attempts = attempts - 1
-				rawInput = write("Would you like to try to again? >> ")
-	return(0, attempts)
-
-######## Pseduo-code
-
-### Scene outline
-
-# Enter Room
-
-# Observe Room
-
-# 	if observe:
-# 		interact
-# 		make a note
-
-# 	if not observe:
-
-# Leave Room
+	pass
